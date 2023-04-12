@@ -27,7 +27,10 @@
     "vue": "^2.5.2",
     "vue-amap": "^0.5.10",
     "vue-axios": "^3.4.1",
-    "vue-router": "^3.0.1"
+    "vue-router": "^3.0.1",
+    "highlight.js": "^11.7.0",
+    "markdown-it": "^13.0.1",
+    "@traptitech/markdown-it-katex": "^3.6.0"
   },
   "devDependencies": {
     "autoprefixer": "^7.1.2",

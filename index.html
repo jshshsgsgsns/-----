@@ -5,6 +5,8 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <title>AI Scene</title>
+    <link rel="icon" type="image/icon" href="https://luvi.gitee.io/ai/favicon.ico">
+    <meta name="apple-mobile-web-app-title" content="AI助手，ai问答">
     <style>
         *,
         body,
@@ -15,33 +17,17 @@
 
         /* 1,滚动条 */
         ::-webkit-scrollbar {
-            width: 4px;
+            width: 0px;
             /* 纵向滚动条 宽度 */
             height: 0px;
             /* 横向滚动条 高度 */
-            border-radius: 2.5px;
-            /* 整体 圆角 */
-        }
-
-        /* 3,外层轨道 */
-        ::-webkit-scrollbar-track {
-            /* background: red; */
-            border-radius: 10px;
-        }
-
-        /* 4.内层轨道，它会覆盖外层轨道的样式。 */
-        ::-webkit-scrollbar-track-piece {
-            width: 5px;
-            background-color: rgba(0, 0, 0, 0);
-            border-radius: 5px;
         }
 
         /* 5,滑块 */
         ::-webkit-scrollbar-thumb {
-            background: #e5e2e2;
+            background: #b1b1b1;
             min-height: 50px;
-            min-width: 5px;
-            border-radius: 5px;
+            max-height: 100vh;
         }
 
 

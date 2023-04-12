@@ -2,12 +2,12 @@
   <div class="container">
     <div class="popup" ref="popup" @click="popupClose">
       <div class="con_left" @click.stop>
-        <button class="new_talk" @click="newTalk">开始新对话</button>
+        <button class="new_talk" @click="newTalk">开始新对话{{ type }}</button>
 
         <div class="talk_list">
-          <div v-for="item in talkList" @click="reTalk(item)">
+          <div v-for="item in talkList" @click="reTalk(item)" :class="{ 'border': tid == item.id }">
             <span>{{ item.data[(item.data.length - 2)].content }}</span>
-            <i class="el-icon-chat-line-square"></i>
+            <i class="el-icon-s-comment"></i>
           </div>
         </div>
 
@@ -16,22 +16,32 @@
             <span>打赏作者</span>
             <i class="el-icon-arrow-right"></i>
           </div>
-          <div class="bar" @click="wxCode = true">
+          <!-- <div class="bar" @click="wxCode = true">
             <span>微信小程序</span>
             <i class="el-icon-arrow-right"></i>
-          </div>
+          </div> -->
           <div class="bar" @click="dialogVisible = true">
             <span>免责声明</span>
             <i class="el-icon-arrow-right"></i>
           </div>
         </div>
+
+        <div class="copyright">
+          <img src="https://foruda.gitee.com/avatar/1677159626142702590/9019412_luvi_1638684013.png!avatar200" alt=""
+            srcset="">
+          <div>
+            <H2>luvi</H2>
+            <p>Star on <a href="https://gitee.com/luvi">Gitee</a></p>
+          </div>
+        </div>
       </div>
     </div>
 
-    <div class="con_right">
-      <div class="header">
-        <div class="more_button" @click="popupShow"><i class="el-icon-s-unfold"></i></div>
-        <img src="../../assets/images/aslogo.png" alt="" srcset="">
+    <div class="con_right" ref="con_right">
+      <div class="header" ref="header">
+        <div class="more_button" @click="popupShow"><i class="el-icon-s-operation"></i></div>
+        <!-- <img src="../../assets/images/aslogo.png" alt="" srcset=""> -->
+        <span>AI Scene</span>
       </div>
       <div class="content">
         <div class="limit" v-if="messages.length <= 0">
@@ -67,23 +77,25 @@
         </div>
 
         <div class="content_list" ref="scrollDiv">
-          <contentList :contentList="messages"></contentList>
+          <div class="talk_con">
+            <contentList :contentList="messages"></contentList>
+          </div>
         </div>
       </div>
       <div class="footer">
         <div class="input_con">
-          <input :disabled="disabled" type="textarea" :placeholder="disabled ? '...' : '发送消息给AI'" v-model="content"
-            @keyup.enter="send()">
+          <el-input type="textarea" :rows="3" :placeholder="disabled ? '获取中...' : '发送消息给AI'" v-model="content"
+            @keyup.enter="send()"></el-input>
           <div class="sub_btn" @click="send()">
             <i v-if="!disabled" class="el-icon-s-promotion"></i>
             <i v-else class="el-icon-loading"></i>
           </div>
         </div>
-        <p>本站点基于国内API混合开发，仅供学习 AI 使用，使用前请知晓 <span @click="dialogVisible = true">免责申明</span></p>
+        <p>Based on OpenAI API (gpt-3.5-turbo) 仅供学习 AI 使用，使用前请知晓 <span @click="dialogVisible = true">免责申明</span></p>
       </div>
     </div>
 
-    <el-dialog style="margin-top: -100px;" title="免责申明" :visible.sync="dialogVisible" width="90%"
+    <el-dialog style="margin-top: -100px;" title="免责申明" :visible.sync="dialogVisible" width="80%"
       :before-close="handleClose">
       <div class="grid-content content">
         本服务仅供个人学习、学术研究目的使用，未经许可，请勿分享、传播输入及生成的文本、图片内容。您在从事与本服务相关的所有行为(包括但不限于访问浏览、利用、转载、宣传介绍)时，必须以善意且谨慎的态度行事；您确保不得利用本服务故意或者过失的从事危害国家安全和社会公共利益、扰乱经济秩序和社会秩序、侵犯他人合法权益等法律、行政法规禁止的活动，并确保自定义输入文本不包含以下违反法律法规、政治相关、侵害他人合法权益的内容：
@@ -107,8 +119,7 @@
 
     <!-- 打赏 -->
     <el-dialog style="margin-top: -100px;" title="打赏作者" :visible.sync="reward" width="500px" :before-close="handleClose">
-      <p class="context">本平台是一个基于ChatGPT的<span
-          style="color: #2e8cff;">免费</span>的人工智能应用聚合平台，可进行智能对话、翻译、创作、学习以及趣味问答等。为了能确保本平台能更长久的运行下去，希望您能够支持一下作者哦。觉得好用的话还希望您分享给其他人。
+      <p class="context">本平台是一个基于gpt-3.5-turbo的<span style="color: #2e8cff;">免费</span>的人工智能应用平台，可进行智能对话、翻译、创作、学习以及趣味问答等。
       </p>
       <img style="width: 40%;" src="../../assets/images/wx.png">
       <img style="width: 40%;" src="../../assets/images/zfb.jpg">
@@ -121,8 +132,7 @@
     <!-- 微信小程序 -->
     <el-dialog style="margin-top: -100px;" title="扫码体验官方微信小程序" :visible.sync="wxCode" width="500px"
       :before-close="handleClose">
-      <p class="context">本平台是一个基于ChatGPT的<span
-          style="color: #2e8cff;">免费</span>的人工智能应用聚合平台，可进行智能对话、翻译、创作、学习以及趣味问答等。为了能确保本平台能更长久的运行下去，希望您能够支持一下作者哦。觉得好用的话还希望您分享给其他人。
+      <p class="context">本平台是一个基于gpt-3.5-turbo的<span style="color: #2e8cff;">免费</span>的人工智能应用平台，可进行智能对话、翻译、创作、学习以及趣味问答等。
       </p>
       <img style="width: 100%;margin-top: 20px;" src="../../assets/images/gh_9255934cf8be_430.jpg">
     </el-dialog>
@@ -150,7 +160,9 @@ export default {
       reward: false,
       //
       wxCode: false,
-      talkList: []
+      talkList: [],
+      tid: localStorage.getItem("talkId"),
+      type: this.$route.query.type
     };
   },
   created() {
@@ -159,6 +171,13 @@ export default {
     setTimeout(_ => {
       this.handleScrollBottom() //滚动至最底部
     }, 100)
+
+  },
+  mounted() {
+    if (this.type == 'app') {
+      this.$refs.header.style = "display:none"
+      this.$refs.scrollDiv.style = "margin-top:-35px"
+    }
   },
   methods: {
     send() {
@@ -187,13 +206,21 @@ export default {
 
       let req = {
         messages: this.messages.slice(0, -1),
-        model: "gpt-3.5-turbo",
+        // model: "gpt-3.5-turbo",
         sign: sign,
         timestamp: timeStamp
       }
 
       openChat(req).then(res => {
-        this.messages[(this.messages.length - 1)].content = res.data.choices[0].text
+        let data
+        if (res.data.indexOf('"error": {') != -1) {
+          data = JSON.parse(res.data).error.message
+        } else {
+          data = res.data
+        }
+
+        // data = res.data.indexOf('"error": {') != -1 ? "获取失败，请重试，或重新开启对话！" : res.data
+        this.messages[(this.messages.length - 1)].content = data
         this.handleScrollBottom() //滚动至最底部
         this.disabled = false
 
@@ -230,7 +257,7 @@ export default {
     // 保存历史数据据
     saveHistory() {
       let obj = {
-        id: this.getTimeStamp(),
+        id: 'scene' + this.getTimeStamp(),
         data: this.messages
       }
       if (this.messages.length > 0) {
@@ -244,7 +271,8 @@ export default {
           this.talkList.unshift(obj)
         }
         localStorage.removeItem("talkId")
-        this.talkList = this.talkList.slice(0, 5)
+        this.tid = ''
+        this.talkList = this.talkList.slice(0, 8)
         localStorage.setItem("talkList", JSON.stringify(this.talkList))
       }
     },
@@ -259,6 +287,7 @@ export default {
       this.saveHistory()
 
       localStorage.setItem("talkId", item.id)
+      this.tid = item.id
       this.messages = item.data
       this.popupClose()
       setTimeout(_ => {
@@ -270,11 +299,11 @@ export default {
 </script>
 
 <style lang="less" scoped>
-@contentWidth: 700px;
+@contentWidth: 800px;
 @themeColor: #4684ff;
 // @themeColor: #4684ff;
 @commonColor: #eee;
-@themeRadius: 5px;
+@themeRadius: 6px;
 
 
 
@@ -295,7 +324,8 @@ export default {
   align-items: center;
   // justify-content: center;
   min-width: 250px;
-  background: #f6f7f9;
+  max-width: 250px;
+  background: #fff;
   height: 100%;
   padding: 20px 0;
   box-sizing: border-box;
@@ -304,17 +334,35 @@ export default {
   .talk_list {
     width: 80%;
     margin-top: 10px;
+    color: #4c4c4c;
+
+    .border {
+      border: 1px solid #778dfc;
+      background: #f2f6ff;
+
+      color: #6e86ff;
+
+      &:hover {
+        background: #f0f4ff;
+      }
+
+      // font-weight: bold;
+    }
+
 
     div {
       display: flex;
       justify-content: space-between;
       align-items: center;
       height: 45px;
-      border-bottom: 1px solid #ddd;
-      padding: 0 6px 0 10px;
+      border: 1px solid #eee;
+      border-radius: 6px;
+      padding: 0 15px 0 15px;
       font-size: 14px;
       box-sizing: border-box;
       cursor: pointer;
+      margin-top: 10px;
+      color: #595959;
 
       span {
         display: inline-block;
@@ -329,44 +377,85 @@ export default {
       }
 
       &:hover {
-        background: #eee;
+        background-image: linear-gradient(to right, #eee, #eee);
       }
     }
   }
 
+  .copyright {
+    position: absolute;
+    bottom: 15px;
+    width: 90%;
+    border: 1px solid #eee;
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    box-sizing: border-box;
+    border-radius: 8px;
+
+    img {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      margin-right: 10px;
+    }
+
+    div {
+      color: #424242;
+
+      h2 {
+        font-size: 15px;
+      }
+    }
+
+    p {
+      font-size: 13px;
+      margin-top: 2px;
+    }
+
+    a {
+      color: #266dfb;
+      font-weight: normal !important;
+    }
+  }
 
   .new_talk {
     border: none;
     width: 80%;
-    height: 40px;
+    height: 45px;
+    font-weight: bold;
+    letter-spacing: 1px;
     margin-bottom: 16px;
-    background: @themeColor;
+    background-image: linear-gradient(to right, #778dfc, #3D73E9);
+
     border-radius: @themeRadius;
     box-shadow: 0px 3px 8px 0px rgba(0, 0, 0, 0.08);
     color: #fff;
     cursor: pointer;
-    transition: 0.3s;
+    transition: 0.2s;
 
     &:hover {
-      background: #4684ff;
+      background-image: linear-gradient(to right, #6b83fb, #3d8de4);
     }
 
     &:active {
-      background: #266dfb;
+      background-image: linear-gradient(to right, #6b83fb, #3d8de4);
     }
   }
 
   .other {
     position: absolute;
-    bottom: 25px;
-    width: 80%;
-    border-radius: 5px;
+    bottom: 90px;
+    width: 90%;
+    border-radius: 6px;
     overflow: hidden;
 
     .bar {
       line-height: 45px;
-      border-bottom: 1px solid #ddd;
-      background: #eeeeee;
+      // border-bottom: 1px solid #ddd;
+      font-weight: bold;
+      // background: #eeeeee;
+      color: #5a5a5a;
       box-sizing: border-box;
       cursor: pointer;
       font-size: 14px;
@@ -376,7 +465,7 @@ export default {
       justify-content: space-between;
 
       &:hover {
-        background: #ddd;
+        background: #eee;
       }
 
       &:nth-child(3) {
@@ -391,14 +480,28 @@ export default {
   min-width: 800px;
   width: 100%;
   height: 100%;
+  // background: #ECEFF6;
+  background-image: linear-gradient(45deg, #f6f8ff, #E2E8FF);
+
 
   .header {
-    position: relative;
+    position: absolute;
+    z-index: 1;
+    width: 100%;
     display: flex;
+    display: none;
     align-items: center;
     justify-content: center;
-    background: #4684ff;
-    height: 50px;
+    background-image: linear-gradient(to left, #5185ff, 1px, #5185ff);
+    backdrop-filter: blur(8px);
+    height: 45px;
+
+    span {
+      font-size: 16px;
+      text-align: center;
+      color: #ffffff;
+      font-weight: bold;
+    }
 
     img {
       width: 140px;
@@ -408,7 +511,7 @@ export default {
       display: none;
       position: absolute;
       left: 15px;
-      font-size: 25px;
+      font-size: 23px;
       width: 35px;
       height: 35px;
       color: #fff;
@@ -428,6 +531,7 @@ export default {
     .limit {
       margin: auto;
       width: @contentWidth;
+      margin-top: 60px;
     }
 
     .tip {
@@ -485,13 +589,19 @@ export default {
     }
 
     .content_list {
-      margin: auto;
-      padding-top: 20px;
+      width: calc(100%);
+      padding-top: 50px;
+      padding-bottom: 170px;
+      // padding-left: 3px;
       box-sizing: border-box;
-      width: @contentWidth;
       overflow: scroll;
-      height: calc(100vh - 160px);
+      height: calc(100vh);
       overflow-x: hidden;
+    }
+
+    .talk_con {
+      margin: auto;
+      width: calc(@contentWidth);
     }
   }
 
@@ -499,9 +609,10 @@ export default {
   // footer总高度175px
   .footer {
     position: absolute;
-    background: #fff;
+    // background: #ECEFF6;
     // padding-top: 30px;
-    // background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0), 20%, #f5f6fa);
+    // background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0), 3%, #ECEFF6);
+    backdrop-filter: blur(20px);
 
     bottom: 0px;
     width: 100%;
@@ -509,43 +620,57 @@ export default {
     .input_con {
       position: relative;
       margin: auto;
-      width: @contentWidth;
+      width: @contentWidth + 100px;
 
       .sub_btn {
         position: absolute;
-        top: 0;
         right: 10px;
-        line-height: 30px;
-        top: 7.5px;
-        width: 30px;
+        line-height: 38px;
+        border-radius: 5px;
+        bottom: 10px;
+        width: 38px;
         text-align: center;
-        color: rgba(30, 30, 30, 0.6);
+        color: #fff;
         cursor: pointer;
         transition: 0.2s;
-        font-size: 20px;
+        font-size: 21px;
+        background-image: linear-gradient(to right, #778dfc, #3D73E9);
 
 
         &:hover {
-          background: #eee;
-          border-radius: @themeRadius;
+          background-image: linear-gradient(to right, #778dfc, #6178ec);
         }
       }
 
-      input {
-        position: absolute;
-        top: 0;
-        left: 0;
-        box-sizing: border-box;
-        border: 1px solid #e9e9e9;
-        width: 100%;
-        height: 45px;
-        line-height: 45px;
-        padding: 0 45px 0 15px;
-        border-radius: 5px;
-        transition: 0.3s;
-        letter-spacing: 0.5px;
-        color: #383838;
+      // .el-input {
+      //   position: absolute;
+      //   top: 0;
+      //   left: 0;
+      //   box-sizing: border-box;
+      //   border: 1px solid #e9e9e9;
+      //   width: 100%;
+      //   line-height: 45px;
+      //   padding: 0 45px 0 15px;
+      //   border-radius: 6px;
+      //   // height: 50px;
+      //   transition: 0.3s;
+      //   letter-spacing: 0.5px;
+      //   color: #383838;
+      //   box-shadow: 0px 3px 8px 0px rgba(0, 0, 0, 0.02);
+
+      //   &:focus {
+      //     outline: none;
+      //     border: 1px solid @themeColor;
+      //     box-shadow: 0px 0px 8px 0px rgba(0, 0, 0, 0.03);
+      //   }
+      // }
+
+      /deep/ .el-textarea__inner {
         box-shadow: 0px 3px 8px 0px rgba(0, 0, 0, 0.02);
+        border-radius: 8px;
+        font-family: 'black';
+        padding: 10px 10px;
+        box-sizing: border-box;
 
         &:focus {
           outline: none;
@@ -559,8 +684,8 @@ export default {
     }
 
     p {
-      margin-top: 70px;
-      margin-bottom: 30px;
+      margin-top: 15px;
+      margin-bottom: 20px;
       box-sizing: border-box;
       font-size: 10px;
       color: #909090;
@@ -601,8 +726,20 @@ export default {
       max-width: 100%;
     }
 
+    .header {
+      display: block;
+      display: flex;
+      background-image: linear-gradient(to right, #778dfc, #3D73E9);
+
+    }
+
     .more_button {
       display: block !important;
+      color: #fff !important;
+    }
+
+    .talk_con {
+      max-width: 100%;
     }
   }
 
@@ -611,7 +748,8 @@ export default {
   }
 
   .content_list {
-    max-width: 100%;
+    max-width: calc(100% - 30px);
+    margin: auto;
   }
 
   /deep/ .el-dialog {

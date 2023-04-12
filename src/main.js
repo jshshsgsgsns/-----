@@ -6,6 +6,11 @@ import 'element-ui/lib/theme-chalk/index.css'
 import axios from 'axios'
 import VueAxios from 'vue-axios'
 
+// import 'katex/dist/katex.min.css'
+// import '@/styles/lib/tailwind.css'
+import '@/assets/css/highlight.less'
+// import '@/styles/lib/github-markdown.less'
+
 // import Vant from "vant";
 
 //定义全局变量
