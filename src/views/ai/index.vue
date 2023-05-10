@@ -168,6 +168,10 @@ export default {
   created() {
     this.messages = localStorage.getItem("messages") ? JSON.parse(localStorage.getItem("messages")) : []
     this.talkList = localStorage.getItem("talkList") ? JSON.parse(localStorage.getItem("talkList")) : []
+
+    let arr = [{ "topic": null, "describe": null, "annotation": null, "fileUrl": null, "status": 0, "allScore": 0, "stuGraScoreList": [] }]
+
+    console.log(arr[0].allScore);
     setTimeout(_ => {
       this.handleScrollBottom() //滚动至最底部
     }, 100)
@@ -315,6 +319,11 @@ export default {
   overflow: hidden;
   min-width: 100px;
   transition: 0.6s;
+  background-image: url("https://luvi.gitee.io/ai/publicImages/login_background.c41c40af.png");
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  backdrop-filter: blur(10px);
 }
 
 .con_left {
@@ -325,7 +334,7 @@ export default {
   // justify-content: center;
   min-width: 250px;
   max-width: 250px;
-  background: #fff;
+  background: rgba(255, 255, 255, 1);
   height: 100%;
   padding: 20px 0;
   box-sizing: border-box;
@@ -481,7 +490,7 @@ export default {
   width: 100%;
   height: 100%;
   // background: #ECEFF6;
-  background-image: linear-gradient(45deg, #f6f8ff, #E2E8FF);
+  // background-image: linear-gradient(45deg, #f6f8ff, #E2E8FF);
 
 
   .header {
