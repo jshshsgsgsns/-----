@@ -1,4 +1,4 @@
-![输入图片说明](preview/1692440526462.jpg)![输入图片说明](preview/1692440459637.jpg)# pc
+# pc
 
 > this is a vue pc client of shopping
 
@@ -28,7 +28,7 @@ For a detailed explanation on how things work, check out the [guide](http://vuej
 ![输入图片说明](preview/1692440459637.jpg)
 ![输入图片说明](preview/1692440603847.jpg)
 
-###移动端
+##移动端
 ![输入图片说明](preview/1692440526462.jpg)
 ![输入图片说明](preview/1692440493232.jpg)
 ![输入图片说明](preview/1692440509102.jpg)
