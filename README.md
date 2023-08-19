@@ -1,4 +1,4 @@
-# pc
+![输入图片说明](preview/1692440526462.jpg)![输入图片说明](preview/1692440459637.jpg)# pc
 
 > this is a vue pc client of shopping
 
@@ -22,4 +22,14 @@ For a detailed explanation on how things work, check out the [guide](http://vuej
 
 
 
-## 此处为打包，提交详情页专属通道
+## 界面截图
+![输入图片说明](preview/1692440433379.jpg)
+![输入图片说明](preview/1692440444876.jpg)
+![输入图片说明](preview/1692440459637.jpg)
+![输入图片说明](preview/1692440603847.jpg)
+
+###移动端
+![输入图片说明](preview/1692440526462.jpg)
+![输入图片说明](preview/1692440493232.jpg)
+![输入图片说明](preview/1692440509102.jpg)
+![输入图片说明](preview/1692440518091.jpg)
