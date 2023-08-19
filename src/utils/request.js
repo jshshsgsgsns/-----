@@ -1,39 +1,8 @@
 import axios from 'axios'
-import { Toast, Notify } from 'vant'
 import { tansParams } from '@/utils/ruoyi'
 import cache from '@/plugins/cache'
+import { MessageBox, Message } from 'element-ui'
 
-// eslint-disable-next-line no-unused-vars
-let loadingInstance
-let needLoadingRequestCount = 0
-
-// 显示loading
-function showFullScreenLoading() {
-  if (needLoadingRequestCount === 0) {
-    loadingInstance = Toast.loading({
-      duration: 0, // 持续展示 toast
-      forbidClick: true,
-      message: ''
-    })
-  }
-  needLoadingRequestCount++
-}
-
-// 关闭loading
-function tryHideFullScreenLoading() {
-  if (needLoadingRequestCount <= 0) return
-  needLoadingRequestCount--
-  if (needLoadingRequestCount === 0) {
-    setTimeout(tryCloseLoading, 300)// 300ms 间隔内的 loading 合并为一次
-  }
-}
-
-// 尝试关闭loading
-const tryCloseLoading = function () {
-  if (needLoadingRequestCount === 0) {
-    Toast.clear()
-  }
-}
 
 axios.defaults.headers['Content-Type'] = 'application/json;charset=utf-8'
 
@@ -46,15 +15,13 @@ const errorCode = {
 
 // 创建axios实例
 const service = axios.create({
-  baseURL: "https://e.mtyee.cn/ruoyi-admin",
-  timeout: 500000 // 超时
+  baseURL: process.env.VUE_APP_BASE_API, // url = base url + request url
+  // withCredentials: true, // send cookies when cross-domain requests
+  timeout: 5000 // request timeout
 })
 
 // request拦截器
 service.interceptors.request.use(config => {
-  if (!config.hideLoading) {
-    showFullScreenLoading()
-  }
   // 是否需要防止数据重复提交
   const isRepeatSubmit = (config.headers || {}).repeatSubmit === false
   // get请求映射params参数
@@ -94,9 +61,6 @@ service.interceptors.request.use(config => {
 
 // 响应拦截器
 service.interceptors.response.use(res => {
-  if (!res.config.hideLoading) {
-    tryHideFullScreenLoading()
-  }
   // 未设置状态码则默认成功状态
   const code = res.data.code || 200
   // 获取错误信息
@@ -108,16 +72,18 @@ service.interceptors.response.use(res => {
 
   if (code === 500) {
     if (!res.config.customError) {
-      Toast({
+      Message({
         message: msg,
-        type: 'fail'
+        type: 'error',
+        duration: 2 * 1000
       })
     }
     return Promise.reject(new Error(msg))
   } else if (code !== 200) {
-    Notify({
-      type: 'danger',
-      message: msg
+    Message({
+      message: msg,
+      type: 'error',
+      duration: 2 * 1000
     })
     // eslint-disable-next-line prefer-promise-reject-errors
     return Promise.reject('error')
@@ -125,9 +91,6 @@ service.interceptors.response.use(res => {
     return Promise.resolve(res.data)
   }
 }, error => {
-  if (!error.config.hideLoading) {
-    tryHideFullScreenLoading()
-  }
   let { message } = error
   if (message === 'Network Error') {
     message = '后端接口连接异常'
@@ -136,10 +99,10 @@ service.interceptors.response.use(res => {
   } else if (message.includes('Request failed with status code')) {
     message = '系统接口' + message.substr(message.length - 3) + '异常'
   }
-  Toast({
+  Message({
     message: message,
-    type: 'fail',
-    duration: 5 * 1000
+    type: 'error',
+    duration: 2 * 1000
   })
   return Promise.reject(error)
 })
