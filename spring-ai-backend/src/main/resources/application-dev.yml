@@ -1,0 +1,20 @@
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/ai_hotel_dev?useSSL=false&serverTimezone=UTC&characterEncoding=utf8&allowPublicKeyRetrieval=true&useUnicode=true&characterEncoding=UTF-8
+    username: root
+    password: root
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+
+aliyun:
+  dashscope:
+    api-key: ${DASHSCOPE_API_KEY:your-dev-api-key}
+    model: qwen-turbo
+    timeout: 30000
+
+logging:
+  level:
+    root: INFO
+    com.ai.hotel: DEBUG

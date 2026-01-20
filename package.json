@@ -1,7 +1,7 @@
 {
-  "name": "ai",
+  "name": "hotel-management-ai-assistant",
   "version": "3.0.0",
-  "description": "ai",
+  "description": "酒店管理ai助手",
   "author": "luvi",
   "private": true,
   "scripts": {

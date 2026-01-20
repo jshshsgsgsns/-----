@@ -1,22 +1,30 @@
 <template>
-    <div style="padding-bottom: 10px;">
-        <div :class="{ 'card': true, 'cardFlexEnd': item.role == 'user', 'sysDialog': item.role !== 'user' }"
-            v-for="(item, i) in contentList" :key="i">
-            <!-- <img v-if="item.role !== 'user'" src="../../../assets/images/ai.png" alt="" srcset=""> -->
-            <div class="miIcon" v-if="item.role == 'user'">
-                U
+    <div class="chat-container">
+        <div v-for="(item, i) in contentList" :key="i" 
+            :class="{ 'message-wrapper': true, 'user-message': item.role == 'user', 'ai-message': item.role !== 'user' }">
+            
+            <div class="message-content">
+                <div class="avatar" v-if="item.role !== 'user'">
+                    AI
+                </div>
+                <div class="avatar user-avatar" v-if="item.role == 'user'">
+                    U
+                </div>
+                
+                <div class="message-body">
+                    <div v-if="item.content && item.content !== 'wait'"
+                        :class="{ 'message-bubble': true, 'user-bubble': item.role == 'user', 'ai-bubble': item.role !== 'user' }" 
+                        v-html="mdIt(item.content)">
+                    </div>
+                    <div v-if="item.content == 'wait'" class="message-bubble ai-bubble">
+                        <span class="typing-indicator"><i class="el-icon-more"></i></span>
+                    </div>
+                    
+                    <div class="message-time" v-if="item.timestamp">
+                        {{ formatTime(item.timestamp) }}
+                    </div>
+                </div>
             </div>
-            <div class="miIcon ai" v-if="item.role !== 'user'">
-                AI
-            </div>
-            <div v-if="item.content && item.content !== 'wait'"
-                :class="{ 'context': true, 'commonDialog': item.role == 'user' }" v-html="mdIt(item.content)">
-            </div>
-            <div v-if="item.content == 'wait'" :class="{ 'context': true }">
-                <span class="point-flicker"><i class="el-icon-more"></i></span>
-            </div>
-            <!-- <img style="width:0" v-if="item.role == 'user'"
-                src="https://bjb.openstorage.cn/v1/yjcbb/public/profile/1571207145304_944060.jpg" alt="" srcset=""> -->
         </div>
     </div>
 </template>
@@ -58,6 +66,28 @@ export default {
     methods: {
         mdIt(text) {
             return mdi.render(text)
+        },
+        formatTime(timestamp) {
+            if (!timestamp) return '';
+            const date = new Date(timestamp);
+            const now = new Date();
+            const diff = now - date;
+            
+            const hours = date.getHours().toString().padStart(2, '0');
+            const minutes = date.getMinutes().toString().padStart(2, '0');
+            
+            if (diff < 60000) {
+                return '刚刚';
+            } else if (diff < 3600000) {
+                const mins = Math.floor(diff / 60000);
+                return `${mins}分钟前`;
+            } else if (date.toDateString() === now.toDateString()) {
+                return `${hours}:${minutes}`;
+            } else {
+                const month = (date.getMonth() + 1).toString().padStart(2, '0');
+                const day = date.getDate().toString().padStart(2, '0');
+                return `${month}-${day} ${hours}:${minutes}`;
+            }
         }
     }
 };
@@ -65,123 +95,222 @@ export default {
 
 <style lang="less" scoped>
 @contentWidth: 700px;
-@themeColor: #fff;
-@commonColor: rgba(0, 0, 0, 0);
-@themeRadius: 8px;
 
-
-
-
-.sysDialog {
-    background: @themeColor;
-    color: #41434F;
-    border-radius: @themeRadius;
-    box-shadow: 0px 5px 10px 0px rgba(57, 59, 60, 0.06) !important;
-    cursor: pointer;
-    transition: 0.3s;
-
-    &:hover {
-        box-shadow: 0px 0px 20px 0px rgba(57, 59, 60, 0.03) !important;
-
-    }
+.chat-container {
+    padding: 20px 10px;
+    max-width: @contentWidth;
+    margin: 0 auto;
 }
 
-.commonDialog {
-    background: @commonColor;
-    color: #41434F !important;
-    // box-shadow: 0px 3px 8px 0px rgba(0, 0, 0, 0.03) !important;
-    cursor: pointer;
-    transition: 0.3s;
-
-    &:hover {
-        // background: rgba(57, 59, 60, 0.2);
-    }
-}
-
-.cardFlexEnd {
-    // justify-content: flex-end;
-    // margin-right: 10px;
-}
-
-.card {
-    position: relative;
+.message-wrapper {
     display: flex;
-    margin-bottom: 15px;
-    transform: 0.3s;
-    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
-
-
-    &:hover {
-        transition: all 0.3s ease;
-        transform: scale(1.005);
+    margin-bottom: 20px;
+    animation: messageSlideIn 0.3s ease-out;
+    
+    &.ai-message {
+        justify-content: flex-start;
     }
-
-
-    img {
-        padding: 7px;
-        width: 40px;
-        height: 40px;
-        border-radius: @themeRadius;
-        box-sizing: border-box;
-        margin: 5px 10px;
-    }
-
-    .context {
-        box-sizing: border-box;
-        line-height: 25px;
-        // min-width: 60px;
-        max-width: calc(100% - 70px);
-        padding: 15px 0px 15px 0px;
-        font-size: 14px;
-        // box-shadow: 0px 3px 8px 0px rgba(0, 0, 0, 0.08);
-        // white-space: pre-wrap;
+    
+    &.user-message {
+        justify-content: flex-end;
     }
 }
 
-/* 设置动画 */
-.point-flicker {
-    display: inline-block;
-    // font-size: 20px;
-    height: 100%;
-    animation: warn 1.2s ease-out 0s infinite;
+.message-content {
+    display: flex;
+    align-items: flex-start;
+    max-width: 80%;
 }
 
-@keyframes warn {
-    0% {
-        opacity: 1;
-    }
-
-    25% {
-        opacity: 0.25;
-    }
-
-    50% {
-        opacity: 0.5;
-    }
-
-    75% {
-        opacity: 0.75;
-    }
-
-    100% {
-        opacity: 1;
-    }
+.ai-message .message-content {
+    flex-direction: row;
 }
 
-.miIcon {
-    min-width: 30px;
-    margin: 12px;
-    height: 30px;
-    line-height: 30px;
+.user-message .message-content {
+    flex-direction: row-reverse;
+}
+
+.avatar {
+    min-width: 40px;
+    width: 40px;
+    height: 40px;
+    line-height: 40px;
     text-align: center;
-    background: #414141;
-    box-sizing: border-box;
-    border-radius: 5px;
-    font-size: 13px;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: bold;
     color: #fff;
+    flex-shrink: 0;
+    margin: 0 10px;
+    background-image: linear-gradient(135deg, #778dfc, #3D73E9);
 }
 
-.ai {
-    background-image: linear-gradient(to right, #778dfc, #3D73E9) !important;
+.user-avatar {
+    background-image: linear-gradient(135deg, #41434F, #2D2F3A);
+}
+
+.message-body {
+    display: flex;
+    flex-direction: column;
+    max-width: calc(100% - 60px);
+}
+
+.message-bubble {
+    padding: 12px 16px;
+    border-radius: 8px;
+    font-size: 15px;
+    line-height: 1.6;
+    word-wrap: break-word;
+    word-break: break-word;
+    position: relative;
+    transition: all 0.3s ease;
+    
+    p {
+        margin: 0;
+        padding: 0;
+    }
+    
+    pre {
+        background: rgba(0, 0, 0, 0.05);
+        padding: 10px;
+        border-radius: 4px;
+        overflow-x: auto;
+        margin: 8px 0;
+    }
+    
+    code {
+        background: rgba(0, 0, 0, 0.05);
+        padding: 2px 6px;
+        border-radius: 3px;
+        font-family: 'Courier New', monospace;
+    }
+}
+
+.ai-bubble {
+    background: #f5f5f5;
+    color: #333;
+    border-top-left-radius: 2px;
+    margin-left: 0;
+    
+    &::before {
+        content: '';
+        position: absolute;
+        left: -8px;
+        top: 12px;
+        width: 0;
+        height: 0;
+        border-top: 6px solid transparent;
+        border-bottom: 6px solid transparent;
+        border-right: 8px solid #f5f5f5;
+    }
+}
+
+.user-bubble {
+    background: linear-gradient(135deg, #778dfc, #3D73E9);
+    color: #fff;
+    border-top-right-radius: 2px;
+    margin-right: 0;
+    
+    &::before {
+        content: '';
+        position: absolute;
+        right: -8px;
+        top: 12px;
+        width: 0;
+        height: 0;
+        border-top: 6px solid transparent;
+        border-bottom: 6px solid transparent;
+        border-left: 8px solid #3D73E9;
+    }
+    
+    p {
+        color: #fff;
+    }
+}
+
+.message-time {
+    font-size: 12px;
+    color: #999;
+    margin-top: 6px;
+    text-align: center;
+    opacity: 0.8;
+}
+
+.ai-message .message-time {
+    text-align: left;
+    margin-left: 60px;
+}
+
+.user-message .message-time {
+    text-align: right;
+    margin-right: 60px;
+}
+
+.typing-indicator {
+    display: inline-block;
+    animation: typing 1.2s ease-in-out infinite;
+}
+
+@keyframes typing {
+    0%, 100% {
+        opacity: 0.3;
+    }
+    50% {
+        opacity: 1;
+    }
+}
+
+@keyframes messageSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@media (max-width: 768px) {
+    .chat-container {
+        padding: 15px 8px;
+    }
+    
+    .message-content {
+        max-width: 90%;
+    }
+    
+    .message-bubble {
+        font-size: 14px;
+        padding: 10px 14px;
+    }
+    
+    .avatar {
+        width: 36px;
+        height: 36px;
+        line-height: 36px;
+        font-size: 13px;
+    }
+    
+    .ai-message .message-time {
+        margin-left: 56px;
+    }
+    
+    .user-message .message-time {
+        margin-right: 56px;
+    }
+}
+
+@media (max-width: 480px) {
+    .message-content {
+        max-width: 95%;
+    }
+    
+    .avatar {
+        width: 32px;
+        height: 32px;
+        line-height: 32px;
+        font-size: 12px;
+    }
 }
 </style>
